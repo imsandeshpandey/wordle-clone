@@ -90,7 +90,6 @@ export const App: FC = () => {
     for (const idx in input) {
       const char = input[idx]
       if (!newWordFrequencyMap.get(char)) {
-        keysStatus.current[char] = INCORRECT
         accuracies.push(INCORRECT)
         continue
       }
@@ -114,9 +113,9 @@ export const App: FC = () => {
           gridClone[row][idx].accuracy = accuracies[idx]
           return gridClone
         })
+        keysStatus.current[grid[row][idx].char] = accuracies[idx]
         setTimeout(resolve, 500)
       })
-      keysStatus.current[grid[row][idx].char] = accuracies[idx]
     }
     setIsRevealing(false)
     if (totalAccuracy === 10) {
