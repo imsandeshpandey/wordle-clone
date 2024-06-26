@@ -60,25 +60,29 @@ const Key = ({
   keyRefs: KeyRefs
 }) => {
   const explicitStyles = {
-    "w-20": val === "Enter",
-    "w-16": val === "Backspace",
+    "w-14 md:min-w-20": val === "Enter",
+    "w-10 md:w-16": val === "Backspace",
   }
   return (
-    <div className={cn("relative h-14 min-w-12", explicitStyles)}>
+    <div className={cn("relative h-10 w-8 md:h-14 md:w-12", explicitStyles)}>
       <button
         ref={(el) => {
           if (el) keyRefs[val.toUpperCase()] = el
         }}
         data-key={val}
         className={cn(
-          "absolute flex h-14 w-12 origin-bottom cursor-pointer items-center justify-center rounded-md border-2 border-border bg-muted/20 px-4 text-lg font-medium shadow-sm transition-all hover:scale-105 active:mt-0.5 active:scale-90",
+          "absolute flex h-full w-full origin-bottom cursor-pointer items-center justify-center rounded-md border-2 border-border bg-muted/20 text-sm font-medium shadow-sm transition-all hover:scale-105 active:mt-0.5 active:scale-90 md:h-14 md:w-12 md:text-lg",
           explicitStyles,
           COLORS[status],
           status === Accuracy.INCORRECT &&
             "border-rose-700 bg-rose-600 text-background dark:text-foreground"
         )}
       >
-        {val === "Backspace" ? <Delete className="h-5 w-5" /> : val}
+        {val === "Backspace" ? (
+          <Delete className="h-3 w-3 md:h-5 md:w-5" />
+        ) : (
+          val
+        )}
       </button>
     </div>
   )

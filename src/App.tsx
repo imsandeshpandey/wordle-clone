@@ -173,7 +173,7 @@ export const App: FC = () => {
     <div className="relative flex h-screen flex-col items-center justify-center gap-1">
       <OnBoarding />
       <div className="mb-4">
-        <h1 className="flex-items-center text-4xl font-bold drop-shadow-md">
+        <h1 className="flex-items-center text-3xl font-bold drop-shadow-md md:text-4xl">
           Wordle
         </h1>
 

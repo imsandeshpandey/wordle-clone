@@ -26,11 +26,11 @@ export const GridView: FC<GridViewProps> = ({
   }, [pos, refs, update])
 
   return (
-    <div className="relative flex flex-col gap-2 text-3xl font-bold uppercase">
+    <div className="relative flex flex-col gap-1 text-3xl font-bold uppercase md:gap-2">
       <div
         style={{ top: caretPos[0], left: caretPos[1] }}
         className={cn(
-          "absolute aspect-square h-[4.25rem] rounded-md border-2 border-foreground transition-all",
+          "absolute aspect-square h-14 rounded-md border-2 border-foreground transition-all md:h-[4.25rem]",
           isRevealing && "opacity-0"
         )}
       />
@@ -39,7 +39,7 @@ export const GridView: FC<GridViewProps> = ({
           ref={(el) => (refs.current.rows[rowIdx] = el)}
           id={`row-${rowIdx}`}
           key={rowIdx}
-          className="flex gap-2"
+          className="flex gap-1 md:gap-2"
         >
           {row.map(({ char, accuracy }, charIdx) => (
             <p
@@ -48,7 +48,7 @@ export const GridView: FC<GridViewProps> = ({
               key={charIdx}
               style={{ transitionDelay: "0.3s" }}
               className={cn(
-                "flex aspect-square h-[4.25rem] items-center justify-center rounded-lg border-2 bg-foreground/5 shadow-sm transition-all",
+                "flex aspect-square h-14 items-center justify-center rounded-lg border-2 bg-foreground/5 shadow-sm transition-all md:h-[4.25rem]",
                 COLORS[accuracy],
                 !!char &&
                   accuracy == Accuracy.UNKNOWN &&
