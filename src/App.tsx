@@ -20,6 +20,7 @@ import { RefreshCwIcon, Volume2Icon } from "lucide-react"
 import { useSound, volumeAtom } from "./hooks/useSound"
 import { VolumeSlider } from "./components/volume-slider"
 import { OnBoarding } from "./onboarding"
+import { ModeToggle } from "./components/theme-toggle"
 
 const { PLAYING, WON, LOST } = GameStatus
 const { CORRECT, PARTIAL, INCORRECT } = Accuracy
@@ -168,14 +169,17 @@ export const App: FC = () => {
     <div className="relative flex h-screen flex-col items-center justify-center gap-1">
       <OnBoarding />
       <div className="mb-4">
-        <h1 className="text-4xl font-bold drop-shadow-md">Wordle</h1>
+        <h1 className="flex-items-center text-4xl font-bold drop-shadow-md">
+          Wordle
+        </h1>
+
         <p className="float-right ml-auto text-xs font-bold text-muted-foreground">
           by frsty
         </p>
       </div>
 
       <div>
-        <div className="mb-2 flex w-full items-end justify-between">
+        <div className="mb-2 flex w-full items-center justify-between">
           <Button
             variant="ghost"
             className="-ml-4 gap-2 text-muted-foreground"
@@ -183,10 +187,13 @@ export const App: FC = () => {
           >
             <RefreshCwIcon className="h-4 w-4" /> Restart
           </Button>
-          <VolumeSlider
-            atom={volumeAtom}
-            icon={<Volume2Icon className="h-4 w-4" />}
-          />
+          <div className="flex items-center gap-2">
+            <VolumeSlider
+              atom={volumeAtom}
+              icon={<Volume2Icon className="h-4 w-4" />}
+            />
+            <ModeToggle />
+          </div>
         </div>
         <GridView
           key={gameWord.current}

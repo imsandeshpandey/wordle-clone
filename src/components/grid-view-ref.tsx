@@ -38,7 +38,7 @@ export const GridView: FC<GridViewProps> = ({ grid, pos, refs, update }) => {
               key={charIdx}
               style={{ transitionDelay: "0.3s" }}
               className={cn(
-                "flex aspect-square h-[4.25rem] items-center justify-center rounded-lg border-2 bg-foreground/5 shadow-lg transition-all",
+                "flex aspect-square h-[4.25rem] items-center justify-center rounded-lg border-2 bg-foreground/5 shadow-sm transition-all",
                 COLORS[accuracy],
                 !!char &&
                   accuracy == Accuracy.UNKNOWN &&

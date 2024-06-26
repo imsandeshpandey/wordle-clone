@@ -8,7 +8,7 @@ import { ThemeProvider } from "./providers/theme.provider.tsx"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <TooltipProvider delayDuration={100}>
         <App />
         <Toaster />
