@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { Button } from "./components/ui/button"
 import {
   Dialog,
@@ -10,33 +10,50 @@ import {
 import correct from "@/assets/svgs/correct.svg"
 import partial from "@/assets/svgs/partial.svg"
 import incorrect from "@/assets/svgs/incorrect.svg"
+import correctLight from "@/assets/svgs/correctLight.svg"
+import partialLight from "@/assets/svgs/partialLight.svg"
+import incorrectLight from "@/assets/svgs/incorrectLight.svg"
 import { atomWithStorage } from "jotai/utils"
 import { useAtom } from "jotai"
+import { useTheme } from "./providers/theme.provider"
 
 const onBoardedAtom = atomWithStorage("onBoarded", false)
-const examples = [
-  {
-    image: correct,
-    alt: "Correct",
-    char: "A",
-    description: "is in the word and in the correct spot.",
-  },
-  {
-    image: partial,
-    alt: "Partial",
-    char: "L",
-    description: "is in the word but in the wrong spot.",
-  },
-  {
-    image: incorrect,
-    alt: "Incorrect",
-    char: "E",
-    description: "is not in any spot.",
-  },
-]
+const images = {
+  dark: [correct, partial, incorrect],
+  light: [correctLight, partialLight, incorrectLight],
+}
+const getExamples = (theme: "light" | "dark") => {
+  const imageSet = images[theme]
+  return [
+    {
+      image: imageSet[0],
+      alt: "Correct",
+      char: "A",
+      description: "is in the word and in the correct spot.",
+    },
+    {
+      image: imageSet[1],
+      alt: "Partial",
+      char: "L",
+      description: "is in the word but in the wrong spot.",
+    },
+    {
+      image: imageSet[2],
+      alt: "Incorrect",
+      char: "E",
+      description: "is not in any spot.",
+    },
+  ]
+}
 export const OnBoarding: FC = () => {
+  const { theme } = useTheme()
   const [, setOnBoarded] = useAtom(onBoardedAtom)
   const onBoarded = localStorage.getItem("onBoarded") === "true"
+
+  const examples = useMemo(
+    () => getExamples(theme as unknown as "light" | "dark"),
+    [theme]
+  )
 
   return (
     <Dialog open={!onBoarded} onOpenChange={() => setOnBoarded(true)}>

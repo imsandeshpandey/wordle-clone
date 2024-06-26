@@ -42,8 +42,10 @@ export const DEFAULT_GRID: Grid = Array(GRID_ROWS).fill(
 )
 
 export const COLORS = {
-  [Accuracy.CORRECT]: "bg-emerald-500 outline-emerald-500",
-  [Accuracy.PARTIAL]: "bg-amber-500 outline-amber-500",
+  [Accuracy.CORRECT]:
+    "bg-emerald-500 outline-emerald-500 outline-emerald-600 border-emerald-600",
+  [Accuracy.PARTIAL]:
+    "bg-amber-500 outline-amber-500 outline-amber-600 border-amber-600",
   [Accuracy.INCORRECT]: "text-muted-foreground",
   [Accuracy.UNKNOWN]: "text-foreground",
 }
