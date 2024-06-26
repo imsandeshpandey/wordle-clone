@@ -41,6 +41,7 @@ export const App: FC = () => {
   )
   const [grid, setGrid] = useState(DEFAULT_GRID)
   const [update, setUpdate] = useState(0)
+  const [isRevealing, setIsRevealing] = useState(false)
   const [gameStatus, setGameStatus] = useState<GameStatus>(PLAYING)
   const gameOver = gameStatus !== PLAYING
 
@@ -104,6 +105,7 @@ export const App: FC = () => {
   }
   const revealResults = async (accuracies: number[], row: number) => {
     let totalAccuracy = 0
+    setIsRevealing(true)
     for (const idx in accuracies) {
       totalAccuracy += accuracies[idx]
       await new Promise((resolve) => {
@@ -116,6 +118,7 @@ export const App: FC = () => {
       })
       keysStatus.current[grid[row][idx].char] = accuracies[idx]
     }
+    setIsRevealing(false)
     if (totalAccuracy === 10) {
       setGameStatus(WON)
       playSound("success")
@@ -196,6 +199,7 @@ export const App: FC = () => {
           </div>
         </div>
         <GridView
+          isRevealing={isRevealing}
           key={gameWord.current}
           update={update}
           refs={gridRefs}

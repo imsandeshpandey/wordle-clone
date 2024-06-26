@@ -7,8 +7,15 @@ export type GridViewProps = {
   pos: [number, number]
   refs: React.MutableRefObject<GridViewRef>
   update: number
+  isRevealing: boolean
 }
-export const GridView: FC<GridViewProps> = ({ grid, pos, refs, update }) => {
+export const GridView: FC<GridViewProps> = ({
+  grid,
+  pos,
+  refs,
+  update,
+  isRevealing,
+}) => {
   const [caretPos, setCaretPos] = useState<(string | number)[]>([])
 
   useEffect(() => {
@@ -22,7 +29,10 @@ export const GridView: FC<GridViewProps> = ({ grid, pos, refs, update }) => {
     <div className="relative flex flex-col gap-2 text-3xl font-bold uppercase">
       <div
         style={{ top: caretPos[0], left: caretPos[1] }}
-        className="absolute aspect-square h-[4.25rem] rounded-md border-2 border-foreground transition-all"
+        className={cn(
+          "absolute aspect-square h-[4.25rem] rounded-md border-2 border-foreground transition-all",
+          isRevealing && "opacity-0"
+        )}
       />
       {grid.map((row, rowIdx) => (
         <div
