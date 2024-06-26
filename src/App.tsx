@@ -113,7 +113,9 @@ export const App: FC = () => {
           gridClone[row][idx].accuracy = accuracies[idx]
           return gridClone
         })
-        keysStatus.current[grid[row][idx].char] = accuracies[idx]
+        const char = grid[row][idx].char
+        const prevAccuracy = keysStatus.current[char] || 0
+        keysStatus.current[char] = Math.max(prevAccuracy, accuracies[idx])
         setTimeout(resolve, 500)
       })
     }
