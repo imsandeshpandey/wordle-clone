@@ -1,12 +1,12 @@
 import { FC, useMemo } from "react"
-import { Button } from "./components/ui/button"
+import { Button } from "./ui/button"
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "./components/ui/dialog"
+} from "./ui/dialog"
 import correct from "@/assets/svgs/correct.svg"
 import partial from "@/assets/svgs/partial.svg"
 import incorrect from "@/assets/svgs/incorrect.svg"
@@ -15,7 +15,7 @@ import partialLight from "@/assets/svgs/partialLight.svg"
 import incorrectLight from "@/assets/svgs/incorrectLight.svg"
 import { atomWithStorage } from "jotai/utils"
 import { useAtom } from "jotai"
-import { useTheme } from "./providers/theme.provider"
+import { useTheme } from "../providers/theme.provider"
 
 const onBoardedAtom = atomWithStorage("onBoarded", false)
 const images = {

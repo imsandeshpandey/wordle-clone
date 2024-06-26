@@ -30,7 +30,7 @@ export const GridView: FC<GridViewProps> = ({
       <div
         style={{ top: caretPos[0], left: caretPos[1] }}
         className={cn(
-          "absolute aspect-square h-14 rounded-md border-2 border-foreground transition-all md:h-[4.25rem]",
+          "absolute aspect-square h-14 rounded-lg border-2 border-foreground transition-all md:h-[4.25rem]",
           isRevealing && "opacity-0"
         )}
       />

@@ -2284,6 +2284,7 @@ export const words = [
   "WOOER",
   "WOOLY",
   "WOOZY",
+  "WORDS",
   "WORDY",
   "WORLD",
   "WORRY",
