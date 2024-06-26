@@ -170,7 +170,7 @@ export const App: FC = () => {
   }, [grid, position, gameStatus])
 
   return (
-    <div className="relative flex h-full flex-col items-center justify-around gap-1">
+    <div className="relative flex h-full flex-col items-center justify-center gap-1">
       <OnBoarding />
       <div className="mb-2 py-2">
         <h1 className="flex-items-center text-3xl font-bold drop-shadow-md md:text-4xl">
