@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useMemo, useRef, useState } from "react"
-import { deepCopyGrid, getRandomWord } from "./lib/utils"
+import { deepCopyGrid, getRandomWord, vibrate } from "./lib/utils"
 import {
   DEFAULT_POS,
   DEFAULT_GRID,
@@ -21,6 +21,8 @@ import { useSound, volumeAtom } from "./hooks/useSound"
 import { VolumeSlider } from "./components/volume-slider"
 import { OnBoarding } from "./components/onboarding"
 import { ModeToggle } from "./components/theme-toggle"
+import { ANIMATIONS } from "./config/animations.config"
+import { VIBRATIONS } from "./config/vibrations.config"
 
 const { PLAYING, WON, LOST } = GameStatus
 const { CORRECT, PARTIAL, INCORRECT } = Accuracy
@@ -78,10 +80,16 @@ export const App: FC = () => {
         variant: "destructive",
         duration: 3000,
       })
+      vibrate(VIBRATIONS.invalidWord)
       playSound("error")
       const row = gridRefs.current.rows[r]!
-      row.classList.add("animate-shake")
-      setTimeout(() => row.classList.remove("animate-shake"), 500)
+      setIsRevealing(true)
+      row.animate(ANIMATIONS.shake, {
+        duration: 100,
+        iterations: 3,
+      })
+      setTimeout(() => setIsRevealing(false), 400)
+
       return
     }
     const newWordFrequencyMap = new Map(wordFrequencyMap)
@@ -116,6 +124,7 @@ export const App: FC = () => {
         const char = grid[row][idx].char
         const prevAccuracy = keysStatus.current[char] || 0
         keysStatus.current[char] = Math.max(prevAccuracy, accuracies[idx])
+        vibrate(VIBRATIONS.revealLetter)
         setTimeout(resolve, 500)
       })
     }
@@ -123,9 +132,13 @@ export const App: FC = () => {
     if (totalAccuracy === 10) {
       setGameStatus(WON)
       playSound("success")
+      vibrate(VIBRATIONS.win)
       return
     }
-    if (row === grid.length - 1) return setGameStatus(LOST)
+    if (row === grid.length - 1) {
+      vibrate(VIBRATIONS.lose)
+      return setGameStatus(LOST)
+    }
 
     position.current = {
       r: position.current.r + 1,
@@ -171,6 +184,7 @@ export const App: FC = () => {
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center gap-1">
+      {gameWord.current}
       <OnBoarding />
       <div className="mb-2 py-2">
         <h1 className="flex-items-center text-3xl font-bold drop-shadow-md md:text-4xl">

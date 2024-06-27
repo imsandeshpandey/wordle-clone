@@ -2,9 +2,10 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, vibrate } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 import { TooltipProps, TooltipTriggerProps } from "@radix-ui/react-tooltip"
+import { VIBRATIONS } from "@/config/vibrations.config"
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -67,6 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Comp
             className={cn(buttonVariants({ variant, size, className }))}
             ref={ref}
+            onTouchStart={() => vibrate(VIBRATIONS.keyDown)}
             {...props}
           />
         </TooltipTrigger>

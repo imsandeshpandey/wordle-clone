@@ -1,7 +1,9 @@
 import { FC, useEffect, useRef } from "react"
-import { cn } from "../lib/utils"
+import { cn, vibrate } from "../lib/utils"
 import { Accuracy, KEYS, COLORS } from "../config/game.config"
 import { Delete } from "lucide-react"
+import { ANIMATIONS } from "@/config/animations.config"
+import { VIBRATIONS } from "@/config/vibrations.config"
 
 type KeyboardProps = {
   keysStatus: Record<string, Accuracy>
@@ -17,12 +19,21 @@ export const KeyboardView: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
     if (!key) return
     onKeyInput({ key })
   }
+  const handleVibrate = (
+    e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement>
+  ) => {
+    //@ts-expect-error closest doensn't exist on type HTMLDivElement
+    const key = e.target.closest("[data-key]")?.dataset.key
+    if (!key) return
+    vibrate(VIBRATIONS.keyDown)
+    console.log("vibrating")
+  }
 
   const animateKey = (e: KeyboardEvent) => {
     const key = e.key.toUpperCase()
     const keyRef = keyRefs.current[key]
     if (!keyRef) return
-    keyRef.animate([{ scale: 0.9 }, { scale: 1 }], {
+    keyRef.animate(ANIMATIONS.buttonPress, {
       duration: 100,
       easing: "ease-in-out",
     })
@@ -34,7 +45,11 @@ export const KeyboardView: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
     }
   }, [])
   return (
-    <div onClick={handleKeyInput} className="mt-8 flex flex-col gap-1">
+    <div
+      onTouchStart={handleVibrate}
+      onClick={handleKeyInput}
+      className="mt-8 flex select-none flex-col gap-1"
+    >
       {KEYS.map((row) => (
         <div className="mx-auto flex w-fit gap-1">
           {row.map((key) => (
@@ -63,6 +78,9 @@ const Key = ({
     "w-14 md:min-w-20": val === "Enter",
     "w-10 md:w-16": val === "Backspace",
   }
+  const keyLabel =
+    val === "Backspace" ? <Delete className="h-3 w-3 md:h-5 md:w-5" /> : val
+
   return (
     <div className={cn("relative h-10 w-8 md:h-14 md:w-12", explicitStyles)}>
       <button
@@ -78,11 +96,7 @@ const Key = ({
             "border-rose-700 bg-rose-600 text-background dark:text-foreground"
         )}
       >
-        {val === "Backspace" ? (
-          <Delete className="h-3 w-3 md:h-5 md:w-5" />
-        ) : (
-          val
-        )}
+        {keyLabel}
       </button>
     </div>
   )

@@ -1,7 +1,8 @@
 import * as React from "react"
 import * as SliderPrimitive from "@radix-ui/react-slider"
 
-import { cn } from "@/lib/utils"
+import { cn, vibrate } from "@/lib/utils"
+import { VIBRATIONS } from "@/config/vibrations.config"
 
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
@@ -19,15 +20,25 @@ const Slider = React.forwardRef<
       thumbClassName,
       thumbProps,
       tooltipContent,
+      onValueChange,
       ...props
     },
     ref
   ) => {
     const [hovered, setHovered] = React.useState(false)
+    const prevValue = React.useRef(props.value)
+
+    const handleSliderValueChange = (values: number[]) => {
+      onValueChange?.(values)
+      if (Math.abs(values[0] - (prevValue.current?.[0] || 0)) < 0.02) return
+      vibrate(VIBRATIONS.slider)
+      prevValue.current = values
+    }
     return (
       <SliderPrimitive.Root
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onValueChange={(e) => handleSliderValueChange(e)}
         ref={ref}
         className={cn(
           "relative flex w-full touch-none select-none items-center",

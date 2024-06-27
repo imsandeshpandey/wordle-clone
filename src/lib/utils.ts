@@ -24,3 +24,9 @@ export const getWordFrequencyMap = (word: string) => {
   }
   return wordFrequencyMap
 }
+
+export const vibrate = (...args: Parameters<typeof navigator.vibrate>) => {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(...args)
+  }
+}
