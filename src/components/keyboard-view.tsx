@@ -26,7 +26,6 @@ export const KeyboardView: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
     const key = e.target.closest("[data-key]")?.dataset.key
     if (!key) return
     vibrate(VIBRATIONS.keyDown)
-    console.log("vibrating")
   }
 
   const animateKey = (e: KeyboardEvent) => {
