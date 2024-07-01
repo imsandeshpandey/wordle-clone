@@ -10,7 +10,7 @@ export type GridViewProps = {
 }
 export const GridView: FC<GridViewProps> = ({ grid, refs }) => {
   return (
-    <div className="relative flex flex-col gap-1 text-3xl font-bold uppercase md:gap-2">
+    <div className="relative flex flex-col gap-1 text-2xl font-bold uppercase md:gap-2 md:text-3xl">
       {grid.map((row, rowIdx) => (
         <div
           ref={(el) => (refs.current.rows[rowIdx] = el)}

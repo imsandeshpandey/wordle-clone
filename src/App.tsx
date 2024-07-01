@@ -78,7 +78,7 @@ export const App: FC = () => {
             className="restart-button group -ml-4 gap-1 px-1 text-xs md:gap-2 md:text-sm"
             onClick={restart}
           >
-            <RefreshCwIcon className="rotate-in-90 h-3.5 w-3.5 transition-all animate-in md:h-4 md:w-4" />{" "}
+            <RefreshCwIcon className="rotate-in-90 h-3.5 w-3.5 animate-in md:h-4 md:w-4" />{" "}
             Restart
           </Button>
         </div>
