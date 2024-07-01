@@ -47,7 +47,7 @@ export const Results: FC<ResultsProps> = ({
               className="gap-2"
               onClick={(e) => {
                 if (!isToday) return action(e)
-                window.location.href = "/random"
+                window.location.pathname = "/random"
               }}
             >
               {isToday && <Dices />}
