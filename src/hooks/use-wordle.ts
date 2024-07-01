@@ -13,24 +13,13 @@ import {
 import {
   deepCopyGrid,
   getAccuracyArray,
-  getRandomWord,
-  getTodaysWordle,
+  isValidWord,
   vibrate,
 } from "@/lib/utils"
 import { VIBRATIONS } from "@/config/vibrations.config"
 import { ANIMATIONS } from "@/config/animations.config"
-import { words } from "@/config/words.config"
+import { getSolution } from "@/lib/utils"
 
-export const getSolution = async (gameMode: GameMode) => {
-  switch (gameMode) {
-    case GameMode.TODAY:
-      return await getTodaysWordle()
-    case GameMode.RANDOM:
-      return getRandomWord()
-    default:
-      return "invalid"
-  }
-}
 export const useWordle = (gameMode: GameMode) => {
   const playSound = useSound()
   const { toast } = useToast()
@@ -128,7 +117,8 @@ export const useWordle = (gameMode: GameMode) => {
     const { r, c } = caretPosition.current
     if (c <= 4) return
     const input = grid[r].map(({ char }) => char)
-    if (!words.includes(input.join(""))) {
+
+    if (!isValidWord(input.join(""))) {
       toast({
         title: "Word is not in the dictionary!",
         variant: "destructive",
@@ -136,15 +126,13 @@ export const useWordle = (gameMode: GameMode) => {
       })
       vibrate(VIBRATIONS.invalidWord)
       playSound("error")
-      const row = gridRefs.current.rows[r]!
       setIsInputDisabled(true)
-      row.animate(ANIMATIONS.shake, {
+
+      gridRefs.current.rows[r]!.animate(ANIMATIONS.shake, {
         duration: 100,
         iterations: 3,
       })
-      setTimeout(() => setIsInputDisabled(false), 400)
-
-      return
+      return setTimeout(() => setIsInputDisabled(false), 400)
     }
     const accuracies = getAccuracyArray(answer.current, input)
     revealResults(accuracies, r)
@@ -196,7 +184,6 @@ export const useWordle = (gameMode: GameMode) => {
     gridRefs,
     isInputDisabled,
     gameStatus,
-    //
     restart,
     handleKeyInput: handleKeyDown,
     isGameOver,

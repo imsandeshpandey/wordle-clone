@@ -1,18 +1,23 @@
-import { Accuracy, Grid } from "@/config/game.config"
-import { words } from "@/config/words.config"
+import { Accuracy, GameMode, Grid } from "@/config/game.config"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
 export const deepCopyGrid = (grid: Grid) => {
   return grid.map((row) => row.map((item) => ({ ...item })))
 }
-export const getRandomWord = () => {
-  const idx = Math.floor(Math.random() * words.length)
-  return words[idx].toUpperCase()
+
+export const getRandomWordle = async () => {
+  const answers = await import("@/config/answers.config").then(
+    (module) => module.default
+  )
+  const idx = Math.floor(Math.random() * answers.length)
+  return answers[idx].toUpperCase()
 }
+
 export const getWordFrequencyMap = (word: string) => {
   const wordFrequencyMap = {} as Record<string, number>
   for (const char of word) {
@@ -52,11 +57,11 @@ export const getTodaysWordle = async () => {
     const url = `https://www.nytimes.com/svc/wordle/v2/${formatDate(today)}.json`
     const response = await fetch(url)
     const data = await response.json()
-    if (!data.solution) return getRandomWord()
+    if (!data.solution) return getRandomWordle()
     return data.solution.toUpperCase()
   } catch (err) {
     console.error(err)
-    return getRandomWord()
+    return getRandomWordle()
   }
 }
 
@@ -66,4 +71,20 @@ const formatDate = (date: Date) => {
   const day = String(date.getDate()).padStart(2, "0")
 
   return `${year}-${month}-${day}`
+}
+
+export const isValidWord = async (word: string) => {
+  const words = await import("@/config/words.config")
+  return !!words[word.toLowerCase() as keyof typeof words]
+}
+
+export const getSolution = async (gameMode: GameMode) => {
+  switch (gameMode) {
+    case GameMode.TODAY:
+      return await getTodaysWordle()
+    case GameMode.RANDOM:
+      return getRandomWordle()
+    default:
+      return "invalid"
+  }
 }
