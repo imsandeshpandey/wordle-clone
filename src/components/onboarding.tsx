@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { FC, ReactNode, useMemo } from "react"
 import { Button } from "./ui/button"
 import {
   Dialog,
@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "./ui/dialog"
 import correct from "@/assets/svgs/correct.svg"
 import partial from "@/assets/svgs/partial.svg"
@@ -22,6 +23,7 @@ const images = {
   dark: [correct, partial, incorrect],
   light: [correctLight, partialLight, incorrectLight],
 }
+
 const getExamples = (theme: "light" | "dark") => {
   const imageSet = images[theme]
   return [
@@ -45,7 +47,12 @@ const getExamples = (theme: "light" | "dark") => {
     },
   ]
 }
-export const OnBoarding: FC = () => {
+
+type OnBoardingProps = React.ComponentProps<typeof Dialog> & {
+  trigger: ReactNode
+}
+
+export const OnBoarding: FC<OnBoardingProps> = ({ trigger, ...props }) => {
   const { theme } = useTheme()
   const [, setOnBoarded] = useAtom(onBoardedAtom)
   const onBoarded = localStorage.getItem("onBoarded") === "true"
@@ -56,7 +63,12 @@ export const OnBoarding: FC = () => {
   )
 
   return (
-    <Dialog open={!onBoarded} onOpenChange={() => setOnBoarded(true)}>
+    <Dialog
+      defaultOpen={!onBoarded}
+      onOpenChange={() => setOnBoarded(true)}
+      {...props}
+    >
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader className="mb-4">
           <DialogTitle className="mb-4 text-3xl font-bold">

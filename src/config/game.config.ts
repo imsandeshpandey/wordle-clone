@@ -49,3 +49,9 @@ export const COLORS = {
   [Accuracy.INCORRECT]: "text-muted-foreground",
   [Accuracy.UNKNOWN]: "text-foreground",
 }
+
+export enum GameMode {
+  TODAY = "TODAY",
+  RANDOM = "RANDOM",
+  INVALID = "INVALID",
+}

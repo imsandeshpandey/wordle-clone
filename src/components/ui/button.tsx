@@ -57,6 +57,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant,
       size,
       asChild = false,
+      onClick,
       ...props
     },
     ref
@@ -69,6 +70,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             className={cn(buttonVariants({ variant, size, className }))}
             ref={ref}
             onTouchStart={() => vibrate(VIBRATIONS.keyDown)}
+            onClick={(e) => {
+              e.currentTarget.blur()
+              onClick?.(e)
+            }}
             {...props}
           />
         </TooltipTrigger>

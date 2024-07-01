@@ -57,6 +57,15 @@
 .accuracy-0 {
   color: #fa365e;
 }
+.capitalize-first::first-letter {
+  text-transform: capitalize;
+}
+.rotate-in-90 {
+  --tw-enter-rotate: -90deg;
+}
+.-rotate-in-90 {
+  --tw-enter-rotate: 90deg;
+}
 
 @layer base {
   * {
@@ -75,6 +84,7 @@
       "Helvetica Neue",
       sans-serif;
   }
+
   body {
     @apply h-full bg-background text-foreground;
   }
@@ -82,6 +92,6 @@
     @apply h-full;
   }
   #root {
-    @apply h-full;
+    @apply flex h-full items-center;
   }
 }

@@ -1,234 +1,93 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useMemo, useRef, useState } from "react"
-import { deepCopyGrid, getRandomWord, vibrate } from "./lib/utils"
-import {
-  DEFAULT_POS,
-  DEFAULT_GRID,
-  VALID_CHARS_REGEX,
-  GameStatus,
-  Accuracy,
-  GridViewRef,
-} from "./config/game.config"
-import { getWordFrequencyMap } from "./lib/utils"
 import { GridView } from "./components/grid-view-ref"
-import { words } from "./config/words.config"
-import { useToast } from "./components/ui/use-toast"
 import { KeyboardView } from "./components/keyboard-view"
 import { Results } from "./components/results"
 import { Button } from "./components/ui/button"
-import { RefreshCwIcon, Volume2Icon } from "lucide-react"
-import { useSound, volumeAtom } from "./hooks/useSound"
-import { VolumeSlider } from "./components/volume-slider"
+import { Info, RefreshCwIcon } from "lucide-react"
 import { OnBoarding } from "./components/onboarding"
 import { ModeToggle } from "./components/theme-toggle"
-import { ANIMATIONS } from "./config/animations.config"
-import { VIBRATIONS } from "./config/vibrations.config"
+import { useWordle } from "./hooks/use-wordle.ts"
+import { FC } from "react"
+import { GameMode } from "./config/game.config"
+import { InvalidPathPage } from "./components/invalid-path-page.tsx"
+import { GameModeToggle } from "./components/game-mode-toggle.tsx"
+import { Branding } from "./components/branding.tsx"
 
-const { PLAYING, WON, LOST } = GameStatus
-const { CORRECT, PARTIAL, INCORRECT } = Accuracy
+const pathname = window.location.pathname
+let gameMode: GameMode
+switch (pathname) {
+  case "/":
+    gameMode = GameMode.TODAY
+    break
+  case "/random":
+    gameMode = GameMode.RANDOM
+    break
+  default:
+    gameMode = GameMode.INVALID
+}
 
 export const App: FC = () => {
-  const playSound = useSound()
-  const { toast } = useToast()
-  const gridRefs = useRef<GridViewRef>({
-    rows: [],
-    items: {},
-  })
-  const keysStatus = useRef<Record<string, Accuracy>>({})
-  const gameWord = useRef<string>(getRandomWord())
+  const {
+    grid,
+    gridRefs,
+    gameStatus,
+    isGameOver,
+    caretPosition,
+    rerenderDummyState,
+    keysStatus,
+    answer,
+    restart,
+    handleKeyInput,
+  } = useWordle(gameMode)
 
-  const wordFrequencyMap = useMemo(
-    () => getWordFrequencyMap(gameWord.current),
-    [gameWord.current]
-  )
-  const [grid, setGrid] = useState(DEFAULT_GRID)
-  const [update, setUpdate] = useState(0)
-  const [isRevealing, setIsRevealing] = useState(false)
-  const [gameStatus, setGameStatus] = useState<GameStatus>(PLAYING)
-  const gameOver = gameStatus !== PLAYING
-
-  const position = useRef(DEFAULT_POS)
-
-  const handleLetterInput = (e: { key: string }) => {
-    playSound("click")
-    if (!e.key.match(VALID_CHARS_REGEX)) return
-    const { r, c } = position.current
-    if (c > 4) return
-    const newGrid = deepCopyGrid(grid)
-    newGrid[r][c].char = e.key.toUpperCase()
-    setGrid(newGrid)
-    updatePos()
+  if (gameMode === GameMode.INVALID) {
+    return <InvalidPathPage />
   }
-
-  const handleBackspace = () => {
-    playSound("click")
-    const { r, c } = position.current
-    if (c == 0) return
-    const newGrid = deepCopyGrid(grid)
-    newGrid[r][c - 1].char = ""
-    setGrid(newGrid)
-    position.current.c -= 1
-  }
-
-  const compareWord = () => {
-    const { r, c } = position.current
-    if (c <= 4) return
-    const input = grid[r].map(({ char }) => char)
-    if (!words.includes(input.join(""))) {
-      toast({
-        title: "Word is not in the dictionary!",
-        variant: "destructive",
-        duration: 3000,
-      })
-      vibrate(VIBRATIONS.invalidWord)
-      playSound("error")
-      const row = gridRefs.current.rows[r]!
-      setIsRevealing(true)
-      row.animate(ANIMATIONS.shake, {
-        duration: 100,
-        iterations: 3,
-      })
-      setTimeout(() => setIsRevealing(false), 400)
-
-      return
-    }
-    const newWordFrequencyMap = new Map(wordFrequencyMap)
-    const accuracies: Accuracy[] = []
-
-    for (const idx in input) {
-      const char = input[idx]
-      if (!newWordFrequencyMap.get(char)) {
-        accuracies.push(INCORRECT)
-        continue
-      }
-      const expectedChar = gameWord.current[idx]
-      const charCount = newWordFrequencyMap.get(char) || 0
-      const accuracy = expectedChar == char ? CORRECT : PARTIAL
-
-      accuracies.push(accuracy)
-      newWordFrequencyMap.set(char, charCount - 1)
-    }
-    revealResults(accuracies, r)
-  }
-  const revealResults = async (accuracies: number[], row: number) => {
-    let totalAccuracy = 0
-    setIsRevealing(true)
-    for (const idx in accuracies) {
-      totalAccuracy += accuracies[idx]
-      await new Promise((resolve) => {
-        setGrid((prev) => {
-          const gridClone = deepCopyGrid(prev)
-          gridClone[row][idx].accuracy = accuracies[idx]
-          return gridClone
-        })
-        const char = grid[row][idx].char
-        const prevAccuracy = keysStatus.current[char] || 0
-        keysStatus.current[char] = Math.max(prevAccuracy, accuracies[idx])
-        vibrate(VIBRATIONS.revealLetter)
-        setTimeout(resolve, 500)
-      })
-    }
-    setIsRevealing(false)
-    if (totalAccuracy === 10) {
-      setGameStatus(WON)
-      playSound("success")
-      vibrate(VIBRATIONS.win)
-      return
-    }
-    if (row === grid.length - 1) {
-      vibrate(VIBRATIONS.lose)
-      return setGameStatus(LOST)
-    }
-
-    position.current = {
-      r: position.current.r + 1,
-      c: 0,
-    }
-    setUpdate(update + 1)
-  }
-
-  const handleKeyDown = (e: { key: string }) => {
-    if (gameOver) return
-    switch (e.key) {
-      case "Backspace":
-        handleBackspace()
-        break
-      case "Enter":
-        compareWord()
-        break
-      default:
-        handleLetterInput(e)
-    }
-  }
-  const updatePos = () => {
-    const pos = position.current
-    const newPos = {
-      r: pos.r,
-      c: pos.c + 1,
-    }
-    position.current = newPos
-  }
-
-  const restart = () => {
-    setGrid(DEFAULT_GRID)
-    setGameStatus(PLAYING)
-    position.current = DEFAULT_POS
-    gameWord.current = getRandomWord()
-    keysStatus.current = {}
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [grid, position, gameStatus])
 
   return (
-    <div className="relative flex h-full flex-col items-center justify-center gap-1">
-      <OnBoarding />
-      <div className="mb-2 py-2">
-        <h1 className="flex-items-center text-3xl font-bold drop-shadow-md md:text-4xl">
-          Wordle
-        </h1>
-
-        <p className="float-right ml-auto text-xs font-bold text-muted-foreground">
-          by frsty
-        </p>
-      </div>
-
+    <div className="relative mx-auto flex h-full max-h-[1080px] w-fit flex-col items-center justify-center gap-1 py-4">
       <div>
-        <div className="mb-2 flex w-full items-center justify-between">
-          <Button
-            variant="ghost"
-            className="-ml-4 gap-2 text-muted-foreground"
-            onClick={restart}
-          >
-            <RefreshCwIcon className="h-4 w-4" /> Restart
-          </Button>
-          <div className="flex items-center gap-2">
-            <VolumeSlider
-              atom={volumeAtom}
-              icon={<Volume2Icon className="h-4 w-4" />}
-            />
-            <ModeToggle />
-          </div>
+        <Branding className="mx-auto mb-8" />
+        <div className="flex justify-end">
+          <OnBoarding
+            trigger={
+              <Button
+                variant="ghost"
+                className="gap-1 text-xs text-muted-foreground"
+              >
+                <Info className="h-4 w-4" /> How To Play
+              </Button>
+            }
+          />
         </div>
         <GridView
-          isRevealing={isRevealing}
-          key={gameWord.current}
-          update={update}
+          update={rerenderDummyState}
           refs={gridRefs}
           grid={grid}
-          pos={[position.current.r, position.current.c]}
+          pos={[caretPosition.r, caretPosition.c]}
         />
       </div>
-      <KeyboardView
-        keysStatus={keysStatus.current}
-        onKeyInput={handleKeyDown}
-      />
-      {gameOver && (
+      <div className="mt-4 w-fit">
+        <div className="mb-2 flex w-full items-center justify-around gap-2 rounded-full border px-4 text-xs font-bold md:text-sm">
+          <ModeToggle />
+          <span className="mx-2 h-6 w-[1px] bg-foreground/10" />
+          <GameModeToggle gameMode={gameMode} />
+          <span className="mx-2 h-6 w-[1px] bg-foreground/10" />
+          <Button
+            variant="ghost"
+            className="-ml-4 gap-1 px-1 text-xs md:gap-2 md:text-sm"
+            onClick={restart}
+          >
+            <RefreshCwIcon className="h-3.5 w-3.5 md:h-4 md:w-4" /> Restart
+          </Button>
+        </div>
+        <KeyboardView keysStatus={keysStatus} onKeyInput={handleKeyInput} />
+      </div>
+      {isGameOver && (
         <Results
+          gameMode={gameMode}
           gameStatus={gameStatus}
-          gameWord={gameWord.current}
+          gameWord={answer}
           action={restart}
         />
       )}

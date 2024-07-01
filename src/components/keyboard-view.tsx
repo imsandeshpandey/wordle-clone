@@ -47,7 +47,7 @@ export const KeyboardView: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
     <div
       onTouchStart={handleVibrate}
       onClick={handleKeyInput}
-      className="mt-8 flex select-none flex-col gap-1"
+      className="flex select-none flex-col gap-1"
     >
       {KEYS.map((row) => (
         <div className="mx-auto flex w-fit gap-1">
