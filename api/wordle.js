@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     const url = `https://www.nytimes.com/svc/wordle/v2/${formatDate(today)}.json`
     const response = await fetch(url)
     const data = await response.json()
-    res.status(500).send(data)
+    res.status(200).send(data)
   } catch (err) {
     res.status(500).json({ error: err })
   }
