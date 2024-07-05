@@ -53,9 +53,7 @@ export const getAccuracyArray = (expectedWord: string, userInput: string[]) => {
 
 export const getTodaysWordle = async () => {
   try {
-    const today = new Date()
-    const url = `https://www.nytimes.com/svc/wordle/v2/${formatDate(today)}.json`
-    const response = await fetch(url)
+    const response = await fetch("/api/wordle")
     const data = await response.json()
     if (!data.solution) return getRandomWordle()
     return data.solution.toUpperCase()
@@ -63,14 +61,6 @@ export const getTodaysWordle = async () => {
     console.error(err)
     return getRandomWordle()
   }
-}
-
-const formatDate = (date: Date) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-
-  return `${year}-${month}-${day}`
 }
 
 export const isValidWord = async (word: string) => {
