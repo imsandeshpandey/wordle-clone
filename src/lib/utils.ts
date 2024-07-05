@@ -74,8 +74,8 @@ const formatDate = (date: Date) => {
 }
 
 export const isValidWord = async (word: string) => {
-  const words = await import("@/config/words.config")
-  return !!words[word.toLowerCase() as keyof typeof words]
+  const words = await import("@/config/words.config").then((mod) => mod.default)
+  return word.toLowerCase() in words
 }
 
 export const getSolution = async (gameMode: GameMode) => {

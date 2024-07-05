@@ -117,8 +117,8 @@ export const useWordle = (gameMode: GameMode) => {
     const { r, c } = caretPosition.current
     if (c <= 4) return
     const input = grid[r].map(({ char }) => char)
-
-    if (!isValidWord(input.join(""))) {
+    const isValid = await isValidWord(input.join(""))
+    if (!isValid) {
       toast({
         title: "Word is not in the dictionary!",
         variant: "destructive",
@@ -132,7 +132,7 @@ export const useWordle = (gameMode: GameMode) => {
         duration: 100,
         iterations: 3,
       })
-      return setTimeout(() => setIsInputDisabled(false), 400)
+      return setTimeout(() => setIsInputDisabled(false), 300)
     }
     const accuracies = getAccuracyArray(answer.current, input)
     revealResults(accuracies, r)
