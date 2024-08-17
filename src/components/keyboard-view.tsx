@@ -10,7 +10,7 @@ type KeyboardProps = {
   onKeyInput: (e: { key: string }) => void
 }
 type KeyRefs = Record<string, HTMLButtonElement>
-export const KeyboardView: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
+export const Keyboard: FC<KeyboardProps> = ({ keysStatus, onKeyInput }) => {
   const keyRefs = useRef<KeyRefs>({})
 
   const handleKeyInput = (e: React.MouseEvent<HTMLDivElement>) => {
