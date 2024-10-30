@@ -22,8 +22,9 @@ export const Results: FC<ResultsProps> = ({
     if (buttonRef.current) buttonRef.current.focus()
   }, [])
   const isToday = gameMode === GameMode.TODAY
+
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm animate-in zoom-in-50">
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-sm animate-in zoom-in-50">
       <div className="flex flex-col items-center gap-1">
         {gameStatus === LOST && (
           <>

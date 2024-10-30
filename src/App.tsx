@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { GridView } from "./components/grid-view-ref"
+import { GridView } from "./components/grid-view"
 import { Keyboard } from "./components/keyboard-view"
 import { Results } from "./components/results"
 import { Button } from "./components/ui/button"
